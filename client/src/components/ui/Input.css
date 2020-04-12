@@ -1,0 +1,34 @@
+.input-entry{
+    border-radius: 50px;
+    border: 1px solid #aeaeae;
+    box-sizing: border-box;
+    padding: 6px 12px;
+    width: calc(100%);
+}
+
+.input-entry > input{
+    width: 100%;
+    border: none;
+}
+/*
+.input-entry > .icon
+{
+    color: #03A9F4;
+    background-color: #fff;
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    border-radius: 22px;
+    text-align: center;
+    box-sizing: border-box;
+    padding-top: 5px;
+    padding-right: 5px;
+    transition-duration: 0.5s;
+    margin-left: 10px;
+}
+
+.input-entry > .icon:hover{
+    background-color: #03A9F4;
+    color: #fff;
+    cursor: pointer;
+}*/

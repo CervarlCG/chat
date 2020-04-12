@@ -1,0 +1,25 @@
+.input-message
+{
+    border: 1px solid #aeaeae;
+    border-radius: 30px;
+    box-sizing: border-box;
+    padding: 5px 10px;
+    min-height: 44px;
+    bottom: 10px;
+    position: absolute;
+    width: calc(100% - 20px);
+    margin: 0px 10px;
+}
+
+.input-message-input
+{
+    border: none !important; 
+    width: calc(100% - 32px) !important;
+}
+
+.input-message-input:focus
+{
+    outline: 0;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+}

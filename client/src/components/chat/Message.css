@@ -1,0 +1,21 @@
+.chat-msg
+{
+    width: 100%;
+    font-size: 16px;
+    float: right;
+    overflow-wrap: break-word;
+}
+
+.chat-msg-content{
+    display: block;
+    padding: 5px 10px;
+    color: #fff;
+    border-radius: 20px;
+    margin-top: 10px;
+    max-width: calc(100% - 30px);
+}
+
+.chat-msg-from{
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+}
