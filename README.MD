@@ -21,13 +21,15 @@ The first event that the chat listen is 'connection', this event is called when 
     user : 'String value'
 }
 
-This event return a event to the client called 'success login' with the next data:
+This event return a event to the client called 'success login' if the login was success with the next data:
 
 {
 
     user : 'String with the username'
     id: 'String with the runtime id of the user'
 } 
+
+If the login was failed, then the server return the event 'failed login' without data.
 
 ### client events
 Now the client is ready to listening the next events 

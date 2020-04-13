@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Input, Button} from 'antd';
+import {Input, Button, message} from 'antd';
 import './Login.css';
 
 class Login extends Component
@@ -50,6 +50,10 @@ class Login extends Component
                 console.log('Loggin sucees : ', data);
                 this.props.handleLogin(data);
             });
+            this.socket.on('failed login', () =>
+            {
+                message.error('Failed to login, please verify your username.')
+            })
         }
     }
 }

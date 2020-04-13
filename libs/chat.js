@@ -1,10 +1,13 @@
+const Validate = require('./validate');
+const Users = require('./users');
+
 class Chat
 {
     constructor(server)
     {
         this.io = require('socket.io')(server);
-        this.connectedUsers = [];
-        
+        this.validate = new Validate();
+        this.users = new Users();
     }
 
     /**
@@ -24,19 +27,29 @@ class Chat
     onLogin(socket)
     {
         socket.on('login', (data) =>{
-            let user = {
-                nick: data.user,
-                id: socket.id
-            }
-            this.addUser(user);
-            this.onMessages(socket);
-            this.onGetUsers(socket);
-            this.onDisconnect(socket);
-            socket.emit('success login', user);
-            this.io.emit('users', [user]);
-            this.debug('Connection established')
-            this.debug(user);
+            if(data.user && this.validate.user(data.user))
+            {
+                let user = {
+                    nick: data.user,
+                    id: socket.id
+                }
+                this.users.add(user);
+                this.initChatEvents(socket);
+                socket.emit('success login', user);
+                this.io.emit('users', [user]);
+                this.debug('Connection established')
+                this.debug(user);
+            }else{
+                socket.emit('failed login');
+            }   
         });
+    }
+
+    initChatEvents(socket)
+    {
+        this.onMessages(socket);
+        this.onGetUsers(socket);
+        this.onDisconnect(socket);
     }
     /**
      *  This function catch the 'message' event
@@ -58,7 +71,7 @@ class Chat
     onGetUsers(socket)
     {
         socket.on('get users', () =>{
-            socket.emit('users', this.connectedUsers);
+            socket.emit('users', this.users.get());
         });
     }
 
@@ -70,21 +83,11 @@ class Chat
     {
         socket.on('disconnect', () =>
         {
-            this.removeUser(socket.id);
+            this.users.remove(socket.id);
             this.io.emit('user disconnected', socket.id);
             this.debug('The socket ' + socket.id + ' is disconnected');
 
         })
-    }
-
-    addUser(user)
-    {
-        this.connectedUsers.push(user);
-    }
-
-    removeUser(id)
-    {
-        this.connectedUsers = this.connectedUsers.filter(element => element.id !== id);
     }
 
     debug(data)
