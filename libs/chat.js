@@ -36,7 +36,7 @@ class Chat
                 this.users.add(user);
                 this.initChatEvents(socket);
                 socket.emit('success login', user);
-                this.io.emit('users', [user]);
+                socket.broadcast.emit('users', [user]);
                 this.debug('Connection established')
                 this.debug(user);
             }else{
@@ -67,7 +67,7 @@ class Chat
                     msg: msg.msg,
                     from: from
                 }
-                this.io.emit('receive messages', message);
+                socket.broadcast.emit('receive messages', message);
                 this.debug('Message received');
                 this.debug(message);
             }else{
@@ -96,7 +96,7 @@ class Chat
         socket.on('disconnect', () =>
         {
             this.users.remove(socket.id);
-            this.io.emit('user disconnected', socket.id);
+            socket.broadcast.emit('user disconnected', socket.id);
             this.debug('The socket ' + socket.id + ' is disconnected');
 
         })

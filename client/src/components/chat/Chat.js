@@ -107,7 +107,6 @@ class Chat extends Component{
      */
     onReceiveMessages = (message) =>
     {
-        if(message.from.id !== this.user.id)
         this.setState({
             messages: [...this.state.messages, message]
         })
