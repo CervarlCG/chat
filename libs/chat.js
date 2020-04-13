@@ -57,10 +57,22 @@ class Chat
      */
     onMessages(socket)
     {
-        socket.on('message', (data) =>{
-            this.io.emit('receive messages', data);
-            this.debug('Message received');
-            this.debug(data);
+        socket.on('message', (msg) =>{
+            let from = this.users.get(socket.id);
+            
+            if(from && this.validate.message(msg))
+            {
+                let message = {
+                    id: Date.now(),
+                    msg: msg.msg,
+                    from: from
+                }
+                this.io.emit('receive messages', message);
+                this.debug('Message received');
+                this.debug(message);
+            }else{
+                socket.emit('failed message', msg);
+            }
         });
     }
 

@@ -38,13 +38,17 @@ Now the client is ready to listening the next events
 Receive a object with a message with the next format:
 
 {
-
+    id: 'id of the message',
     msg: 'String with the message'
     from: {
         nick : 'user that send the message'
         id: 'String with the runtime id of the user'
     }
 }
+
+### 'failed message' event
+This event receive the msg that can't be process by the server because it has a bad structure
+
 
 #### 'users' event
 This event receive a a array of new users connected with the next format:
@@ -67,12 +71,7 @@ After the login, the backend server is listening the next events:
 This event receive a object with the next format
 
 {
-
     msg: 'String with the message'
-    from: {
-        nick : 'user that send the message'
-        id: 'String with the runtime id of the user'
-    }
 }
 
 #### 'get users' event

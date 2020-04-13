@@ -3,7 +3,7 @@ import Message from './Message';
 import InputMessage from './InputMessage';
 import CardUser from './CardUser';
 import {Layout} from 'antd';
-import {Typography} from 'antd';
+import {Typography, message} from 'antd';
 import './Chat.css';
 
 const {Header, Footer, Sider, Content} = Layout;
@@ -56,7 +56,7 @@ class Chat extends Component{
                                             msg : element.msg,
                                             from : element.from
                                         }
-                                        return <Message message={message} showUserName={showUserName}/>
+                                        return <Message message={message} showUserName={showUserName} key={element.id}/>
                                     })
                                 }
                             </div>
@@ -76,7 +76,7 @@ class Chat extends Component{
         this.socket.on('receive messages', this.onReceiveMessages);
         this.socket.on('users', this.onUsers);        
         this.socket.on('user disconnected', this.onUserDisconnected);
-        
+        this.socket.on('failed message', this.onFailedMessage);
         //Requesting all users in the chat
         this.socket.emit('get users');
     }
@@ -89,6 +89,7 @@ class Chat extends Component{
         if(this.socket && value.trim() !== '')
         {
             let msg = {
+                id : Date.now(),
                 msg : value,
                 from : this.user
             }
@@ -96,7 +97,7 @@ class Chat extends Component{
                 messages: [...this.state.messages, msg],
                 send: ''
             })
-            this.socket.emit('message', msg);
+            this.socket.emit('message', {msg: value});
         }
     }
 
@@ -133,6 +134,14 @@ class Chat extends Component{
         this.setState({
             users: newUsers
         })
+    }
+    /**
+     * This function catch if the server was a error processing the message
+     * @param {object} msg the object sended to the server
+     */
+    onFailedMessage = (msg) =>
+    {
+        message.error('Failed to send message');
     }
 }
 

@@ -2,10 +2,17 @@ class Validate
 {
     user(username)
     {
-        if(typeof username === 'string' && username.trim !== '')
-            return true;
-        else
-            return false;
+        return !this.emptyString(username);
+    }
+
+    message(msg)
+    {
+        return !this.emptyString(msg.msg);
+    }
+
+    emptyString(str)
+    {
+        return typeof str !== 'string' || str.trim() === '';
     }
 }
 

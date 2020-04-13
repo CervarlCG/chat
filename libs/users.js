@@ -4,9 +4,12 @@ class Users
     {
         this.users = [];
     }
-    get()
+    get(id)
     {
-        return this.users;
+        if(!id)
+            return this.users;
+        else
+            return this.search(id);
     }
     add(user)
     {
@@ -16,6 +19,17 @@ class Users
     remove(id)
     {
         this.users = this.users.filter(element => element.id !== id);
+    }
+
+    search(id)
+    {
+        let user = null;
+        this.users.map(element =>{
+            if (element.id === id)
+                user = element
+        });
+
+        return user;
     }
 }
 
