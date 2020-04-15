@@ -38,13 +38,20 @@ Now the client is ready to listening the next events
 Receive a object with a message with the next format:
 
 {
+
     id: 'id of the message',
-    msg: 'String with the message'
+    msg: 'String with the message',
     from: {
         nick : 'user that send the message'
         id: 'String with the runtime id of the user'
-    }
+    },
+    type : 'txt | img'
+
 }
+
+if the type is img then the msg content is the url to the image, only accept jpeg, png and gif.
+
+The image sended to the server is managment by socket-io-file-client, it's a npm module
 
 ### 'failed message' event
 This event receive the msg that can't be process by the server because it has a bad structure

@@ -4,6 +4,7 @@ import InputMessage from './InputMessage';
 import CardUser from './CardUser';
 import {Layout} from 'antd';
 import {Typography, message} from 'antd';
+import SocketIOFileClient from 'socket.io-file-client';
 import './Chat.css';
 
 const {Header, Footer, Sider, Content} = Layout;
@@ -14,6 +15,7 @@ class Chat extends Component{
     {
         super(props);
         this.socket = this.props.socket;
+        this.socketIMG = new SocketIOFileClient(this.socket);
         this.user = this.props.user;
         this.state = {
             messages: [],
@@ -54,7 +56,8 @@ class Chat extends Component{
                                         let message = {
                                             type : type,
                                             msg : element.msg,
-                                            from : element.from
+                                            from : element.from,
+                                            ext : element.type
                                         }
                                         return <Message message={message} showUserName={showUserName} key={element.id}/>
                                     })
@@ -62,7 +65,7 @@ class Chat extends Component{
                             </div>
                         </div>
                         {/* The input where the user write the messages */}
-                            <InputMessage handleSend={this.send}/>
+                            <InputMessage handleSend={this.send} socketIMG={this.socketIMG}/>
                     </Content>
                     </Layout>
             </Layout>
@@ -77,6 +80,7 @@ class Chat extends Component{
         this.socket.on('users', this.onUsers);        
         this.socket.on('user disconnected', this.onUserDisconnected);
         this.socket.on('failed message', this.onFailedMessage);
+        this.onImgUpload();
         //Requesting all users in the chat
         this.socket.emit('get users');
     }
@@ -85,19 +89,21 @@ class Chat extends Component{
      * This function send the menssage to the server
      * @value message to send
      */
-    send = (value) =>{
+    send = (value, type) =>{
         if(this.socket && value.trim() !== '')
         {
             let msg = {
                 id : Date.now(),
                 msg : value,
-                from : this.user
+                from : this.user,
+                type : type
             }
             this.setState({
                 messages: [...this.state.messages, msg],
                 send: ''
             })
-            this.socket.emit('message', {msg: value});
+            if(type === 'txt')
+                this.socket.emit('message', {msg: value});
         }
     }
 
@@ -107,6 +113,7 @@ class Chat extends Component{
      */
     onReceiveMessages = (message) =>
     {
+        console.log(message);
         this.setState({
             messages: [...this.state.messages, message]
         })
@@ -141,6 +148,25 @@ class Chat extends Component{
     onFailedMessage = (msg) =>
     {
         message.error('Failed to send message');
+    }
+
+    onImgUpload = () =>
+    {
+        this.socketIMG.on('start', function(fileInfo) {
+            console.log('Start uploading', fileInfo);
+        });
+        this.socketIMG.on('stream', function(fileInfo) {
+            console.log('Streaming... sent ' + fileInfo.sent + ' bytes.');
+        });
+        this.socketIMG.on('complete', function(fileInfo) {
+            console.log('Upload Complete', fileInfo);
+        });
+        this.socketIMG.on('error', function(err) {
+            console.log('Error!', err);
+        });
+        this.socketIMG.on('abort', function(fileInfo) {
+            console.log('Aborted: ', fileInfo);
+        });
     }
 }
 

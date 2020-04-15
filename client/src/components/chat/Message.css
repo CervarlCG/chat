@@ -19,3 +19,8 @@
     color: rgba(255, 255, 255, 0.5);
     font-size: 12px;
 }
+
+.message-img{
+    max-width: 500px;
+    border-radius: 20px;
+}

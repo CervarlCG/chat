@@ -8,6 +8,7 @@ var app = require('../app');
 var debug = require('debug')('lancteam:server');
 var http = require('http');
 var chat = require('../libs/chat');
+global.serverAddr = "http://localhost:3500";
 /**
  * Get port from environment and store in Express.
  */

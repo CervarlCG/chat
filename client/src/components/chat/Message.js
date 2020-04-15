@@ -23,11 +23,30 @@ class Message extends Component
                             :
                             null
                     }
-                    {this.props.message.msg}
+
+                    {this.getContent()}
                 </div>
             </div>
         )
     }
+
+    getContent = () =>{
+        let content = null;
+        switch(this.props.message.ext)
+        {
+            case 'txt':
+                content = this.props.message.msg;
+                break;
+            case 'img':
+                content = <img src={this.props.message.msg} className="message-img"/>
+                break;
+            default:
+                break; 
+        }
+
+        return content;
+    }
+    
 }
 
 export default Message;

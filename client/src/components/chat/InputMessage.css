@@ -14,7 +14,11 @@
 .input-message-input
 {
     border: none !important; 
-    width: calc(100% - 32px) !important;
+    width: calc(100% - 64px - 10px) !important;
+}
+
+.input-message-icon{
+    margin-left: 5px;
 }
 
 .input-message-input:focus

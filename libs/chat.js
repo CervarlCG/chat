@@ -1,5 +1,7 @@
+const socketIOFile = require('socket.io-file');
 const Validate = require('./validate');
 const Users = require('./users');
+const path = require('path');
 
 class Chat
 {
@@ -8,6 +10,7 @@ class Chat
         this.io = require('socket.io')(server);
         this.validate = new Validate();
         this.users = new Users();
+        
     }
 
     /**
@@ -50,6 +53,7 @@ class Chat
         this.onMessages(socket);
         this.onGetUsers(socket);
         this.onDisconnect(socket);
+        this.onImage(socket);
     }
     /**
      *  This function catch the 'message' event
@@ -58,21 +62,69 @@ class Chat
     onMessages(socket)
     {
         socket.on('message', (msg) =>{
-            let from = this.users.get(socket.id);
+            this.sendMessage(socket, 'txt', msg.msg);
+        });
+    }
+
+    sendMessage(socket, type, text)
+    {
+        let from = this.users.get(socket.id);
+        let message = {
+            id: Date.now(),
+            msg: text,
+            from: from,
+            type: type
+        }
+        if(from && this.validate.message(message))
+        {
+            socket.broadcast.emit('receive messages', message);
+            this.debug('Message received');
+            this.debug(message);
+        }else{
+            socket.emit('failed message', message);
+        }
+    }
+
+    onImage(socket)
+    {
+        let imgUploader = new socketIOFile(socket, {
+            uploadDir: __dirname + '/../public/images',
+            maxFileSize: 4194304,
+            chunkSize: 10240,
+            transmissionDelay: 0,
+            overwrite : true,
+            rename : (filename, fileinfo) => {
+                const file = path.parse(filename);
+                const ext = file.ext;
+                return Date.now() + ext;
+            },
+            accepts: ['image/png', 'image/jpeg', 'image/gif']
+        });
+
+        imgUploader.on('start', (fileInfo) => {
+            this.debug('Start uploading');
+            this.debug(fileInfo);
+        })
+
+        imgUploader.on('stream', (fileInfo) =>{
+            //console.log(`${fileInfo.wrote} / ${fileInfo.size} byte(s)`);
+        })
+
+        imgUploader.on('complete', (fileInfo) => {
+            //console.log('Upload Complete.');
+            //console.log(fileInfo);
+            let type = 'img';
+            let text = global.serverAddr + '/images/' + fileInfo.name;
+            this.sendMessage(socket, type, text);
             
-            if(from && this.validate.message(msg))
-            {
-                let message = {
-                    id: Date.now(),
-                    msg: msg.msg,
-                    from: from
-                }
-                socket.broadcast.emit('receive messages', message);
-                this.debug('Message received');
-                this.debug(message);
-            }else{
-                socket.emit('failed message', msg);
-            }
+        });
+
+        imgUploader.on('error', (err) => {
+            //console.log('Error!', err);
+        });
+
+        imgUploader.on('abort', (fileInfo) => {
+            //console.log('Aborted: ', fileInfo);
         });
     }
 
